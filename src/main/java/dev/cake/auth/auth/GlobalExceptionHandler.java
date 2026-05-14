@@ -20,7 +20,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ProblemDetail handleBadCredentials() {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "User with provided credentials doesn't exist");
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
+                "User with provided credentials doesn't exist");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

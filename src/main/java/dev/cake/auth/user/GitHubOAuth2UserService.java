@@ -1,6 +1,7 @@
 package dev.cake.auth.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GitHubOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
@@ -33,6 +35,7 @@ public class GitHubOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .providerId(providerId)
                     .authProvider(AuthProvider.GITHUB)
                     .build());
+            log.info("User registered with username: '{}'", username);
         }
 
         return new CustomOAuth2User(username, email);

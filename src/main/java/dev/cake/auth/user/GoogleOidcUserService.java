@@ -1,6 +1,7 @@
 package dev.cake.auth.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GoogleOidcUserService implements OAuth2UserService<OidcUserRequest, OidcUser> {
@@ -32,6 +34,7 @@ public class GoogleOidcUserService implements OAuth2UserService<OidcUserRequest,
                     .providerId(providerId)
                     .authProvider(AuthProvider.GOOGLE)
                     .build());
+            log.info("User registered with username: '{}'", username);
         }
 
         return new CustomOidcUser(username, email);
