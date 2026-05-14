@@ -1,5 +1,6 @@
 package dev.cake.auth.auth;
 
+import dev.cake.auth.exception.DuplicateResourceException;
 import dev.cake.auth.user.AuthProvider;
 import dev.cake.auth.user.User;
 import dev.cake.auth.user.UserRepository;
@@ -7,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -14,6 +17,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,31 +30,33 @@ public class AuthService {
     private final JwtEncoder jwtEncoder;
 
     public AuthResponse login(AuthRequest request) {
-        authenticationManager.authenticate(
+        var authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password())
         );
 
-        var user = userRepository.findByUsername(request.username()).orElseThrow();
-
         var now = Instant.now();
+        var scope = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(" "));
         var claims = JwtClaimsSet.builder()
                 .issuer("self")
-                .subject(user.getUsername())
+                .subject(authentication.getName())
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(3600))
+                .claim("scope", scope)
                 .build();
 
         var token = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-        log.info("User authenticated with username: '{}'", user.getUsername());
-        return new AuthResponse(token, user.getUsername());
+        log.info("User authenticated with username: '{}'", authentication.getName());
+        return new AuthResponse(token, authentication.getName());
     }
 
     public void register(RegistrationRequest request) {
         if (userRepository.findByUsername(request.username()).isPresent()) {
-            throw new IllegalArgumentException("Username already taken");
+            throw new DuplicateResourceException("Username", request.username());
         }
         if (userRepository.findByEmail(request.email()).isPresent()) {
-            throw new IllegalArgumentException("Email already taken");
+            throw new DuplicateResourceException("Email", request.email());
         }
 
         var user = User.builder()
