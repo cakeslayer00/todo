@@ -42,15 +42,11 @@ public class AuthService {
         }
 
         var now = Instant.now();
-        var scope = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" "));
         var claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .subject(authentication.getName())
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(3600))
-                .claim("scope", scope)
                 .build();
 
         var token = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

@@ -13,6 +13,21 @@ spring:
   liquibase:
     enabled: true
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: openid,email,profile
+            redirect-uri: "{baseUrl}/api/v1/auth/login/oauth2/code/{registrationId}"
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            scope: read:user,user:email
+            redirect-uri: "{baseUrl}/api/v1/auth/login/oauth2/code/{registrationId}"
+
 app:
   jwt:
     public-key: classpath:keys/public.pem
