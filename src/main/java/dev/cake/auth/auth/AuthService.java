@@ -1,5 +1,6 @@
 package dev.cake.auth.auth;
 
+import dev.cake.auth.exception.FalseCredentialsException;
 import dev.cake.auth.exception.DuplicateResourceException;
 import dev.cake.auth.user.AuthProvider;
 import dev.cake.auth.user.User;
@@ -7,6 +8,7 @@ import dev.cake.auth.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,9 +32,14 @@ public class AuthService {
     private final JwtEncoder jwtEncoder;
 
     public AuthResponse login(AuthRequest request) {
-        var authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.username(), request.password())
-        );
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.username(), request.password())
+            );
+        } catch (BadCredentialsException ex) {
+            throw new FalseCredentialsException();
+        }
 
         var now = Instant.now();
         var scope = authentication.getAuthorities().stream()
@@ -69,4 +76,5 @@ public class AuthService {
         log.info("User registered with username: '{}'", user.getUsername());
         userRepository.save(user);
     }
+
 }
