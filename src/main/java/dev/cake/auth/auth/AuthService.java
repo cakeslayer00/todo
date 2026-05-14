@@ -1,6 +1,5 @@
 package dev.cake.auth.auth;
 
-import dev.cake.auth.exception.FalseCredentialsException;
 import dev.cake.auth.exception.DuplicateResourceException;
 import dev.cake.auth.user.AuthProvider;
 import dev.cake.auth.user.User;
@@ -8,18 +7,9 @@ import dev.cake.auth.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,27 +19,14 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final JwtEncoder jwtEncoder;
+    private final TokenService tokenService;
 
     public AuthResponse login(AuthRequest request) {
-        Authentication authentication;
-        try {
-            authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.username(), request.password())
-            );
-        } catch (BadCredentialsException ex) {
-            throw new FalseCredentialsException();
-        }
+        var authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.username(), request.password())
+        );
 
-        var now = Instant.now();
-        var claims = JwtClaimsSet.builder()
-                .issuer("self")
-                .subject(authentication.getName())
-                .issuedAt(now)
-                .expiresAt(now.plusSeconds(3600))
-                .build();
-
-        var token = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        var token = tokenService.generateToken(authentication.getName());
         log.info("User authenticated with username: '{}'", authentication.getName());
         return new AuthResponse(token, authentication.getName());
     }
