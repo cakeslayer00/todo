@@ -1,4 +1,4 @@
-package dev.cake.auth.user;
+package dev.cake.auth.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

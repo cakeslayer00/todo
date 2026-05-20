@@ -1,8 +1,8 @@
-package dev.cake.auth.config;
+package dev.cake.auth.security;
 
-import dev.cake.auth.auth.TokenService;
-import dev.cake.auth.user.GitHubOAuth2UserService;
-import dev.cake.auth.user.GoogleOidcUserService;
+import dev.cake.auth.service.GitHubOAuth2UserService;
+import dev.cake.auth.service.GoogleOidcUserService;
+import dev.cake.auth.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

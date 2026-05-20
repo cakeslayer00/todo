@@ -1,4 +1,4 @@
-package dev.cake.auth.auth;
+package dev.cake.auth.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,11 +11,6 @@ public class HomeController {
     @GetMapping("/")
     public String home(Principal principal) {
         return "Hello, " + principal.getName();
-    }
-
-    @GetMapping("/secure")
-    public String secure() {
-        return "This is secured!";
     }
 
 }

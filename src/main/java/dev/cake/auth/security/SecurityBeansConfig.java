@@ -1,4 +1,4 @@
-package dev.cake.auth.config;
+package dev.cake.auth.security;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;

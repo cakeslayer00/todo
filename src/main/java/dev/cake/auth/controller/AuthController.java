@@ -1,5 +1,9 @@
-package dev.cake.auth.auth;
+package dev.cake.auth.controller;
 
+import dev.cake.auth.dto.AuthRequest;
+import dev.cake.auth.dto.AuthResponse;
+import dev.cake.auth.dto.RegistrationRequest;
+import dev.cake.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

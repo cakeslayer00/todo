@@ -1,5 +1,7 @@
-package dev.cake.auth.user;
+package dev.cake.auth.service;
 
+import dev.cake.auth.repository.UserRepository;
+import dev.cake.auth.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

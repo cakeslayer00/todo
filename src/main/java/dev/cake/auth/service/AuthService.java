@@ -1,9 +1,12 @@
-package dev.cake.auth.auth;
+package dev.cake.auth.service;
 
+import dev.cake.auth.dto.AuthRequest;
+import dev.cake.auth.dto.AuthResponse;
+import dev.cake.auth.dto.RegistrationRequest;
+import dev.cake.auth.entity.AuthProvider;
+import dev.cake.auth.entity.User;
 import dev.cake.auth.exception.DuplicateResourceException;
-import dev.cake.auth.user.AuthProvider;
-import dev.cake.auth.user.User;
-import dev.cake.auth.user.UserRepository;
+import dev.cake.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;

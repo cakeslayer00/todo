@@ -1,4 +1,4 @@
-package dev.cake.auth.auth;
+package dev.cake.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.JwtEncoder;

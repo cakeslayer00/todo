@@ -1,6 +1,5 @@
-package dev.cake.auth.auth;
+package dev.cake.auth.exception;
 
-import dev.cake.auth.exception.DuplicateResourceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.authentication.BadCredentialsException;

@@ -1,4 +1,4 @@
-package dev.cake.auth.config;
+package dev.cake.auth.security;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

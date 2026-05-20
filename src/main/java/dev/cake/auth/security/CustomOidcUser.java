@@ -1,5 +1,4 @@
-package dev.cake.auth.user;
-
+package dev.cake.auth.security;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

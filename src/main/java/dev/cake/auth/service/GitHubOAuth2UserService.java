@@ -1,5 +1,9 @@
-package dev.cake.auth.user;
+package dev.cake.auth.service;
 
+import dev.cake.auth.entity.AuthProvider;
+import dev.cake.auth.entity.User;
+import dev.cake.auth.repository.UserRepository;
+import dev.cake.auth.security.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
