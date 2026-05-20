@@ -1,33 +1,14 @@
 package dev.cake.auth.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
 @Entity
-@Table(
-        name = "users",
-        indexes = {
-                @Index(name = "idx_users_username", columnList = "username", unique = true),
-                @Index(name = "idx_users_email", columnList = "email", unique = true)
-        }
-)
+@Table(name = "users")
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
