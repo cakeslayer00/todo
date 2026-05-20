@@ -24,4 +24,5 @@ public class TokenService {
                 .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
+
 }

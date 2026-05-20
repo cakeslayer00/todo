@@ -42,4 +42,5 @@ public class CustomOidcUser implements OidcUser {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
     }
+
 }

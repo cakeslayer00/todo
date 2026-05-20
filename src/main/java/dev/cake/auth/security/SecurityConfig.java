@@ -75,4 +75,5 @@ public class SecurityConfig {
         var json = String.format("{\"token\": \"%s\"}", token);
         response.getWriter().write(json);
     }
+
 }

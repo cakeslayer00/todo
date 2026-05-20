@@ -43,4 +43,5 @@ public class GoogleOidcUserService implements OAuth2UserService<OidcUserRequest,
 
         return new CustomOidcUser(username, email);
     }
+
 }

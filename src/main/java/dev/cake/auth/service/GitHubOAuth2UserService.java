@@ -44,4 +44,5 @@ public class GitHubOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         return new CustomOAuth2User(username, email);
     }
+
 }
