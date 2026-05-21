@@ -38,6 +38,7 @@ out/
 
 ### JWT Keys ###
 src/main/resources/keys/
+src/test/resources/keys/
 
 ### Environment ###
 .env

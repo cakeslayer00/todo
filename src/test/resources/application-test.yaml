@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: auth
+
+  config:
+    import: file:.env[.properties]
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  liquibase:
+    enabled: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: openid,email,profile
+            redirect-uri: "{baseUrl}/api/v1/auth/login/oauth2/code/{registrationId}"
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            scope: read:user,user:email
+            redirect-uri: "{baseUrl}/api/v1/auth/login/oauth2/code/{registrationId}"
+
+app:
+  jwt:
+    public-key: classpath:keys/public.pem
+    private-key: classpath:keys/private.pem
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+
+openapi:
+  server-url: http://localhost:8080
+  contact-email: mainacc1838@gmail.com
+  contact-name: v
+  version: "1.0"
+
+logging:
+  level:
+    org.springframework.security: DEBUG

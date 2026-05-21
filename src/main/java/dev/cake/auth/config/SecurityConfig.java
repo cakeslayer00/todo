@@ -2,9 +2,6 @@ package dev.cake.auth.config;
 
 import dev.cake.auth.service.GitHubOAuth2UserService;
 import dev.cake.auth.service.GoogleOidcUserService;
-import dev.cake.auth.service.TokenService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,12 +11,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -28,7 +22,7 @@ public class SecurityConfig {
 
     private final GitHubOAuth2UserService gitHubOAuth2UserService;
     private final GoogleOidcUserService googleOidcUserService;
-    private final TokenService tokenService;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
@@ -48,23 +42,13 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(gitHubOAuth2UserService)
                                 .oidcUserService(googleOidcUserService))
-                        .successHandler(this::oauth2LoginSuccessHandler))
+                        .successHandler(oAuth2LoginSuccessHandler))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(Customizer.withDefaults()))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                         .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
                 .build();
-    }
-
-    private void oauth2LoginSuccessHandler(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-
-        var token = tokenService.generateToken(authentication.getName());
-        var json = String.format("{\"token\": \"%s\"}", token);
-        response.getWriter().write(json);
     }
 
 }
