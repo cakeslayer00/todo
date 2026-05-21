@@ -73,7 +73,8 @@ public class OpenAPIConfig {
                             .description("OAuth2 provider registration ID"))
                     .responses(new ApiResponses()
                             .addApiResponse("302", new ApiResponse().description("Redirect to OAuth2 provider"))
-                            .addApiResponse("400", new ApiResponse().description("Invalid registration ID")));
+                            .addApiResponse("400", new ApiResponse().description("Invalid registration ID")))
+                    .security(List.of());
 
             var callback = new io.swagger.v3.oas.models.Operation()
                     .summary("OAuth2 callback")
@@ -96,7 +97,8 @@ public class OpenAPIConfig {
                                                     .schema(new io.swagger.v3.oas.models.media.ObjectSchema()
                                                             .properties(Map.of("token",
                                                                     new StringSchema().description("JWT access token")))))))
-                            .addApiResponse("401", new ApiResponse().description("OAuth2 authentication failed")));
+                            .addApiResponse("401", new ApiResponse().description("OAuth2 authentication failed")))
+                    .security(List.of());
 
             openAPI.path("/api/v1/auth/login/oauth2/authorization/{registrationId}",
                     new PathItem().get(authorization));
