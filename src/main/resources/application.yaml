@@ -32,3 +32,9 @@ app:
   jwt:
     public-key: classpath:keys/public.pem
     private-key: classpath:keys/private.pem
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+

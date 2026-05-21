@@ -1,4 +1,4 @@
-package dev.cake.auth.security;
+package dev.cake.auth.config;
 
 import dev.cake.auth.service.GitHubOAuth2UserService;
 import dev.cake.auth.service.GoogleOidcUserService;
@@ -35,38 +35,29 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api-docs/**", "/swagger-ui/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(authorization -> authorization
-                                .baseUri("/api/v1/auth/login/oauth2/authorization")
-                        )
+                                .baseUri("/api/v1/auth/login/oauth2/authorization"))
                         .redirectionEndpoint(redirection -> redirection
-                                .baseUri("/api/v1/auth/login/oauth2/code/*")
-                        )
+                                .baseUri("/api/v1/auth/login/oauth2/code/*"))
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(gitHubOAuth2UserService)
-                                .oidcUserService(googleOidcUserService)
-                        )
-                        .successHandler(this::oauth2LoginSuccessHandler)
-                )
+                                .oidcUserService(googleOidcUserService))
+                        .successHandler(this::oauth2LoginSuccessHandler))
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(Customizer.withDefaults())
-                )
+                        .jwt(Customizer.withDefaults()))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
-                        .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
-                )
+                        .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
                 .build();
     }
 
-    private void oauth2LoginSuccessHandler(HttpServletRequest request,
-                                           HttpServletResponse response,
-                                           Authentication authentication) throws IOException {
+    private void oauth2LoginSuccessHandler(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_OK);

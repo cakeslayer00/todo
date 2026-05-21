@@ -27,7 +27,7 @@ public class GoogleOidcUserService implements OAuth2UserService<OidcUserRequest,
         var delegate = new OidcUserService();
         var oidcUser = delegate.loadUser(userRequest);
 
-        var username = Objects.requireNonNull(oidcUser.getUserInfo().getClaims().get("given_name").toString());
+        var username = oidcUser.getGivenName();
         var email = Objects.requireNonNull(oidcUser.getEmail());
         var providerId = oidcUser.getSubject();
 
