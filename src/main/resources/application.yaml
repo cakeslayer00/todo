@@ -38,3 +38,8 @@ springdoc:
     enabled: true
     path: /api-docs
 
+openapi:
+  server-url: http://localhost:8080
+  contact-email: mainacc1838@gmail.com
+  contact-name: v
+  version: "1.0"

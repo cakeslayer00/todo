@@ -13,6 +13,7 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,22 +22,25 @@ import java.util.List;
 import java.util.Map;
 
 @Configuration
+@RequiredArgsConstructor
 public class OpenAPIConfig {
+
+    private final OpenAPIProperties properties;
 
     @Bean
     public OpenAPI openAPI() {
-        Server server = new Server()
-                .url("http://localhost:8080")
+        var server = new Server()
+                .url(properties.serverUrl())
                 .description("Local Dev");
 
-        Contact contact = new Contact()
-                .name("v")
-                .email("mainacc1838@gmail.com");
+        var contact = new Contact()
+                .name(properties.contactName())
+                .email(properties.contactEmail());
 
-        Info information = new Info()
+        var information = new Info()
                 .title("Authentication Service API")
                 .description("REST API for user authentication, registration, and OAuth2 login")
-                .version("1.0")
+                .version(properties.version())
                 .contact(contact);
 
         var bearerScheme = new SecurityScheme()
@@ -48,10 +52,6 @@ public class OpenAPIConfig {
         return new OpenAPI()
                 .info(information)
                 .addServersItem(server)
-                .tags(List.of(
-                        new Tag().name("Authentication").description("Login and registration endpoints"),
-                        new Tag().name("Home").description("Basic authenticated endpoint")
-                ))
                 .components(new Components().addSecuritySchemes("bearer-jwt", bearerScheme))
                 .addSecurityItem(new SecurityRequirement().addList("bearer-jwt"));
     }
