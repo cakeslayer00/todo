@@ -24,6 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OpenApiConfig {
 
+
     private final OpenApiProperties properties;
 
     @Bean
