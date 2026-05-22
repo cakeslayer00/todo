@@ -3,6 +3,7 @@ package dev.cake.auth.integration;
 import dev.cake.auth.dto.AuthRequest;
 import dev.cake.auth.dto.AuthResponse;
 import dev.cake.auth.dto.RegistrationRequest;
+import dev.cake.auth.entity.AuthProvider;
 import dev.cake.auth.entity.User;
 import dev.cake.auth.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,13 +39,20 @@ class AuthIntegrationTest extends BaseIntegrationTest {
                 .email("cakeslayer@gmail.com")
                 .password(passwordEncoder.encode("password67"))
                 .build());
+
+        userRepository.save(User.builder()
+                .username("oauth2Cake")
+                .email("oauth2cakeslayer@gmail.com")
+                .providerId("someProviderId")
+                .authProvider(AuthProvider.GITHUB)
+                .build());
     }
 
     @Test
     void register_withValidRequestBody_shouldReturn201() {
         var requestBody = new RegistrationRequest(
                 "vladislav",
-                "mainacc1838@gmail.com",
+                "genericemail@gmail.com",
                 "password");
 
         mockMvc.post()

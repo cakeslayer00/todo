@@ -12,7 +12,6 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
-import io.swagger.v3.oas.models.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -23,11 +22,12 @@ import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-public class OpenAPIConfig {
+public class OpenApiConfig {
 
-    private final OpenAPIProperties properties;
+    private final OpenApiProperties properties;
 
     @Bean
+
     public OpenAPI openAPI() {
         var server = new Server()
                 .url(properties.serverUrl())
