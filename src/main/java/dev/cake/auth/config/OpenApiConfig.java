@@ -24,11 +24,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OpenApiConfig {
 
-
     private final OpenApiProperties properties;
 
     @Bean
-
     public OpenAPI openAPI() {
         var server = new Server()
                 .url(properties.serverUrl())
