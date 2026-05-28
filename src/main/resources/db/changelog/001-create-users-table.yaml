@@ -18,6 +18,12 @@ databaseChangeLog:
                     nullable: false
                     primaryKey: true
               - column:
+                  name: public_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
                   name: username
                   type: VARCHAR(64)
                   constraints:
@@ -30,16 +36,16 @@ databaseChangeLog:
                     nullable: false
                     unique: true
               - column:
-                  name: password
-                  type: VARCHAR(60)
-              - column:
-                  name: auth_provider
-                  type: VARCHAR(20)
+                  name: email_verified
+                  type: BOOLEAN
                   constraints:
-                    nullable: false
+                    nullable: true
+                  defaultValueBoolean: false
               - column:
-                  name: provider_id
-                  type: VARCHAR(64)
+                  name: password_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
               - column:
                   name: created_at
                   type: TIMESTAMP WITH TIME ZONE
@@ -52,17 +58,3 @@ databaseChangeLog:
                   defaultValueComputed: now()
                   constraints:
                     nullable: false
-        - createIndex:
-            tableName: users
-            indexName: idx_users_username
-            columns:
-              - column:
-                  name: username
-            unique: true
-        - createIndex:
-            tableName: users
-            indexName: idx_users_email
-            columns:
-              - column:
-                  name: email
-            unique: true

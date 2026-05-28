@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-identities-table
+      author: cake
+      changes:
+        - createSequence:
+            sequenceName: identities_id_seq
+            startValue: 1
+            incrementBy: 1
+        - createTable:
+            tableName: identities
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  defaultValueComputed: nextval('identities_id_seq')
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_identities_users_user_id
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    deleteCascade: true
+              - column:
+                  name: provider
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: provider_subject
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: identities
+            indexName: idx_identities_user_id
+            columns:
+              - column:
+                  name: user_id
+        - addUniqueConstraint:
+            tableName: identities
+            columnNames: provider, provider_subject
+            constraintName: uq_identities_provider_subject
