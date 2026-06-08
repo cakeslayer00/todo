@@ -1,5 +1,6 @@
 package dev.cake.auth.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,9 +18,15 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,
+                "The request conflicts with the current state of the resource");
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ProblemDetail handleBadCredentials() {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,
                 "User with provided credentials doesn't exist");
     }
 

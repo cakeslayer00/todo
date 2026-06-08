@@ -13,6 +13,14 @@ spring:
   liquibase:
     enabled: true
 
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
   security:
     oauth2:
       client:
@@ -32,6 +40,11 @@ app:
   jwt:
     public-key: classpath:keys/public.pem
     private-key: classpath:keys/private.pem
+  kafka:
+    topics:
+      user-registered:
+        name: auth.user-registered
+        replicas: 1
 
 springdoc:
   api-docs:

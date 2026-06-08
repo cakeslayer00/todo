@@ -1,29 +1,30 @@
 package dev.cake.auth.security;
 
-import dev.cake.auth.entity.AuthProvider;
 import dev.cake.auth.entity.User;
-import lombok.Getter;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
-@Getter
-public class CustomUserDetails implements UserDetails {
-
-    private final Long id;
-    private final String username;
-    private final String email;
-    private final String password;
-    private final AuthProvider authProvider;
+@NullMarked
+public record CustomUserDetails(Long id,
+                                String username,
+                                String email,
+                                Boolean emailVerified,
+                                String passwordHash,
+                                UUID publicId) implements UserDetails {
 
     public CustomUserDetails(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.email = user.getEmail();
-        this.password = user.getPasswordHash();
-        this.authProvider = user.getAuthProvider();
+        this(user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getEmailVerified(),
+                user.getPasswordHash(),
+                user.getPublicId()
+        );
     }
 
     @Override
@@ -31,9 +32,13 @@ public class CustomUserDetails implements UserDetails {
         return List.of();
     }
 
-    @Override
     public String getPassword() {
-        return password;
+        return passwordHash;
+    }
+
+    @Override
+    public String getUsername() {
+        return username();
     }
 
 }

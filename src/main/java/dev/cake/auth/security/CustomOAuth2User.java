@@ -1,34 +1,29 @@
 package dev.cake.auth.security;
 
-import lombok.Getter;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-@Getter
-public class CustomOAuth2User implements OAuth2User {
-
-    private final String name;
-    private final Map<String, Object> attributes;
-
-    public CustomOAuth2User(String name, String email) {
-        this.name = name;
-        this.attributes = new HashMap<>();
-        attributes.put("email", email);
-    }
+@NullMarked
+public record CustomOAuth2User(UUID publicId, OAuth2User oAuth2User) implements OAuth2User {
 
     @Override
     public Map<String, Object> getAttributes() {
-        return new HashMap<>(attributes);
+        return oAuth2User.getAttributes();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return oAuth2User.getAuthorities();
+    }
+
+    @Override
+    public String getName() {
+        return String.valueOf(publicId);
     }
 
 }

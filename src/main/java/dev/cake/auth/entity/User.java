@@ -12,6 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,14 +27,15 @@ public class User {
     @Column(nullable = false, name = "public_id")
     private UUID publicId;
 
-    @Column(nullable = false, unique = true, length = 64)
+    @Column(length = 64)
     private String username;
 
     @Column(nullable = false, length = 320)
     private String email;
 
+    @Builder.Default
     @Column(name = "email_verified")
-    private Boolean emailVerified;
+    private Boolean emailVerified = false;
 
     @Column(name = "password_hash")
     private String passwordHash;
