@@ -40,10 +40,11 @@ app:
   jwt:
     public-key: classpath:keys/public.pem
     private-key: classpath:keys/private.pem
+
   kafka:
     topics:
-      user-registered:
-        name: auth.user-registered
+      email-verification-requested:
+        name: auth.email-verification-requested
         replicas: 1
 
 springdoc:
@@ -56,3 +57,7 @@ openapi:
   contact-email: mainacc1838@gmail.com
   contact-name: v
   version: "1.0"
+
+verification:
+  token:
+    expiry: 24h

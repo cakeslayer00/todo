@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/changelog/001-create-users-table.yaml
   - include:
       file: db/changelog/002-create-identities-table.yaml
+  - include:
+      file: db/changelog/003-create-email-verifications-table.yaml

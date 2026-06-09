@@ -9,8 +9,8 @@ import org.springframework.kafka.config.TopicBuilder;
 public class KafkaTopicConfig {
 
     @Bean
-    public NewTopic userRegisteredTopic(KafkaTopicProperties topics) {
-        var spec = topics.userRegistered();
+    public NewTopic emailVerificationRequestedTopic(KafkaTopicProperties topics) {
+        var spec = topics.emailVerificationRequested();
         return TopicBuilder.name(spec.name())
                 .partitions(spec.partitions())
                 .replicas(spec.replicas())

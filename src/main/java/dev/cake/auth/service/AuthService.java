@@ -4,10 +4,14 @@ import dev.cake.auth.dto.AuthRequest;
 import dev.cake.auth.dto.AuthResponse;
 import dev.cake.auth.dto.RegistrationRequest;
 import dev.cake.auth.entity.AuthProvider;
+import dev.cake.auth.entity.EmailVerification;
 import dev.cake.auth.entity.Identity;
 import dev.cake.auth.entity.User;
+import dev.cake.auth.config.VerificationTokenProperties;
 import dev.cake.auth.exception.DuplicateResourceException;
-import dev.cake.auth.messaging.event.UserRegisteredEvent;
+import dev.cake.auth.exception.InvalidTokenException;
+import dev.cake.auth.messaging.event.EmailVerificationRequestedEvent;
+import dev.cake.auth.repository.EmailVerificationRepository;
 import dev.cake.auth.repository.IdentityRepository;
 import dev.cake.auth.repository.UserRepository;
 import dev.cake.auth.security.CustomUserDetails;
@@ -20,7 +24,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -29,14 +35,17 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final IdentityRepository identityRepository;
+    private final EmailVerificationRepository emailVerificationRepository;
 
     private final PasswordEncoder passwordEncoder;
-
     private final AuthenticationManager authenticationManager;
 
     private final TokenService tokenService;
 
     private final ApplicationEventPublisher eventPublisher;
+
+    private final VerificationTokenService verificationTokenService;
+    private final VerificationTokenProperties verificationTokenProperties;
 
     public AuthResponse login(AuthRequest request) {
         var authentication = authenticationManager.authenticate(
@@ -75,8 +84,57 @@ public class AuthService {
         identityRepository.save(identity);
         log.info("Local provider identity added to user: '{}'", identity.getProviderSubject());
 
-        eventPublisher.publishEvent(new UserRegisteredEvent(user.getPublicId(), user.getEmail()));
-        log.info("Published UserRegisteredEvent for kafka producer to pick up");
+        var rawToken = issueVerificationToken(user);
+
+        eventPublisher.publishEvent(new EmailVerificationRequestedEvent(
+                user.getPublicId(), user.getUsername(), user.getEmail(), rawToken));
+        log.info("Published EmailVerificationRequestedEvent for user {} after registration", user.getPublicId());
+    }
+
+    @Transactional
+    public void resendVerification(UUID publicId) {
+        var user = userRepository.findByPublicId(publicId)
+                .orElseThrow(() -> new InvalidTokenException("User not found"));
+
+        if (Boolean.TRUE.equals(user.getEmailVerified())) {
+            throw new InvalidTokenException("Email already verified");
+        }
+
+        emailVerificationRepository.consumeAllActiveForUser(user, Instant.now());
+        var rawToken = issueVerificationToken(user);
+
+        eventPublisher.publishEvent(new EmailVerificationRequestedEvent(
+                user.getPublicId(), user.getUsername(), user.getEmail(), rawToken));
+        log.info("Published EmailVerificationRequestedEvent for user {}", user.getPublicId());
+    }
+
+    @Transactional
+    public void verifyConfirmationToken(String token) {
+        var hash = verificationTokenService.hash(token);
+        var verification = emailVerificationRepository.findByTokenHash(hash)
+                .orElseThrow(() -> new InvalidTokenException("Invalid verification token"));
+
+        if (verification.getConsumedAt() != null) {
+            throw new InvalidTokenException("Token already used");
+        }
+        if (verification.getExpiresAt().isBefore(Instant.now())) {
+            throw new InvalidTokenException("Token expired");
+        }
+
+        verification.setConsumedAt(Instant.now());
+        verification.getUser().setEmailVerified(true);
+    }
+
+    private String issueVerificationToken(User user) {
+        var verificationToken = verificationTokenService.generate();
+        emailVerificationRepository.save(EmailVerification.builder()
+                .user(user)
+                .tokenHash(verificationToken.tokenHash())
+                .expiresAt(Instant.now().plus(verificationTokenProperties.expiry()))
+                .build());
+
+        log.info("Verification code for user {} is generated", user.getPublicId());
+        return verificationToken.rawToken();
     }
 
 }
