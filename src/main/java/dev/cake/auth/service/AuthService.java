@@ -88,7 +88,7 @@ public class AuthService {
 
         eventPublisher.publishEvent(new EmailVerificationRequestedEvent(
                 user.getPublicId(), user.getUsername(), user.getEmail(), rawToken));
-        log.info("Published EmailVerificationRequestedEvent for user {} after registration", user.getPublicId());
+        log.info("EmailVerificationRequestedEvent was emitted for kafka producer");
     }
 
     @Transactional
@@ -105,7 +105,7 @@ public class AuthService {
 
         eventPublisher.publishEvent(new EmailVerificationRequestedEvent(
                 user.getPublicId(), user.getUsername(), user.getEmail(), rawToken));
-        log.info("Published EmailVerificationRequestedEvent for user {}", user.getPublicId());
+        log.info("EmailVerificationRequestedEvent was emitted for kafka producer");
     }
 
     @Transactional
@@ -123,6 +123,7 @@ public class AuthService {
 
         verification.setConsumedAt(Instant.now());
         verification.getUser().setEmailVerified(true);
+        log.info("User verified successfully!:)");
     }
 
     private String issueVerificationToken(User user) {
