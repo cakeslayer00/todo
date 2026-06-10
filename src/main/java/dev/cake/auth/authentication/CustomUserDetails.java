@@ -11,11 +11,11 @@ import java.util.UUID;
 
 @NullMarked
 record CustomUserDetails(Long id,
-                                String username,
-                                String email,
-                                Boolean emailVerified,
-                                String passwordHash,
-                                UUID publicId) implements UserDetails {
+                         String username,
+                         String email,
+                         Boolean emailVerified,
+                         String passwordHash,
+                         UUID publicId) implements UserDetails {
 
     CustomUserDetails(User user) {
         this(user.getId(),
