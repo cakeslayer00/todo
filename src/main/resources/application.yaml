@@ -58,6 +58,6 @@ openapi:
   contact-name: v
   version: "1.0"
 
-verification:
+email-verification:
   token:
     expiry: 24h
