@@ -8,6 +8,8 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @ActiveProfiles("test")
 @Import(TestConfiguration.class)
-@EmbeddedKafka(topics = "auth.email-verification-requested", partitions = 1)
+@EmbeddedKafka(
+        topics = "${app.kafka.topics.email-verification-requested.name}",
+        partitions = 1)
 public abstract class AbstractIntegrationTest {
 }

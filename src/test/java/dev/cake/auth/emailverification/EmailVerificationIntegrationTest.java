@@ -116,7 +116,7 @@ public class EmailVerificationIntegrationTest extends AbstractIntegrationTest {
             assertThat(record.value().username()).isEqualTo("johndoe");
             assertThat(record.value().email()).isEqualTo("johndoe@example.com");
             assertThat(record.value().token()).isNotBlank();
-
+        } finally {
             userRepository.deleteAll();
         }
     }
