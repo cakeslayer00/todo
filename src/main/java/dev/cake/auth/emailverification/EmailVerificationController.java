@@ -24,7 +24,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/auth/verify")
 @RequiredArgsConstructor
 @Tag(name = "Email Verification")
-public class EmailVerificationController {
+class EmailVerificationController {
 
     private final EmailVerificationService emailVerificationService;
 

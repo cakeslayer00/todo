@@ -1,7 +1,5 @@
 package dev.cake.auth.authentication;
 
-import dev.cake.auth.authentication.dto.AuthRequest;
-import dev.cake.auth.authentication.dto.AuthResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication")
-public class AuthController {
+class AuthController {
 
     private final AuthService authService;
 

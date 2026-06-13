@@ -1,7 +1,6 @@
 package dev.cake.auth.authentication;
 
-import dev.cake.auth.authentication.dto.AuthRequest;
-import dev.cake.auth.authentication.dto.AuthResponse;
+import dev.cake.auth.common.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;

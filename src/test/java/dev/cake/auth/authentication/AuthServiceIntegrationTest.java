@@ -1,6 +1,5 @@
 package dev.cake.auth.authentication;
 
-import dev.cake.auth.authentication.dto.AuthRequest;
 import dev.cake.auth.common.AbstractIntegrationTest;
 import dev.cake.auth.identity.User;
 import dev.cake.auth.identity.UserRepository;

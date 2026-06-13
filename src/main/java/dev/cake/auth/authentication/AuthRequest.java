@@ -1,4 +1,4 @@
-package dev.cake.auth.authentication.dto;
+package dev.cake.auth.authentication;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Schema(description = "Login credentials")
-public record AuthRequest(
+record AuthRequest(
         @NotBlank @Email @Size(max = 320)
         @Schema(description = "Email address", example = "john@example.com")
         String email,

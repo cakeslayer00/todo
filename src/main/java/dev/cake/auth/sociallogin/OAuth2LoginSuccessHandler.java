@@ -1,6 +1,6 @@
 package dev.cake.auth.sociallogin;
 
-import dev.cake.auth.authentication.TokenService;
+import dev.cake.auth.common.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
