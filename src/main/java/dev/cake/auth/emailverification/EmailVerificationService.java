@@ -62,7 +62,7 @@ class EmailVerificationService {
         var user = userRepository.findByPublicId(userPublicId)
                 .orElseThrow(() -> new InvalidTokenException("User not found"));
 
-        if (Boolean.TRUE.equals(user.getEmailVerified())) {
+        if (user.isEmailVerified()) {
             throw new InvalidTokenException("Email already verified");
         }
 

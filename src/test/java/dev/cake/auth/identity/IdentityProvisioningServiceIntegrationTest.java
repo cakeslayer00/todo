@@ -67,7 +67,7 @@ public class IdentityProvisioningServiceIntegrationTest extends AbstractIntegrat
 
         assertThat(provisioned.getId()).isNotNull();
         assertThat(provisioned.getEmail()).isEqualTo("fresh@example.com");
-        assertThat(provisioned.getEmailVerified()).isTrue();
+        assertThat(provisioned.isEmailVerified()).isTrue();
         assertThat(userRepository.count()).isEqualTo(1);
         assertThat(identityRepository.findUserByProviderAndProviderSubject(
                 AuthProvider.GOOGLE, "google-sub-2"))
@@ -90,7 +90,7 @@ public class IdentityProvisioningServiceIntegrationTest extends AbstractIntegrat
         assertThat(provisioned.getPublicId()).isEqualTo(existing.getPublicId());
         assertThat(userRepository.count()).isEqualTo(1);
 
-        assertThat(provisioned.getEmailVerified()).isTrue();
+        assertThat(provisioned.isEmailVerified()).isTrue();
         assertThat(provisioned.getPasswordHash()).isNull();
         assertThat(identityRepository.findUserByProviderAndProviderSubject(
                 AuthProvider.GITHUB, "github-sub-2"))
@@ -111,7 +111,7 @@ public class IdentityProvisioningServiceIntegrationTest extends AbstractIntegrat
                 AuthProvider.GITHUB, "github-sub-4", "unverified@example.com", false));
 
         assertThat(provisioned.getPublicId()).isEqualTo(existing.getPublicId());
-        assertThat(provisioned.getEmailVerified()).isFalse();
+        assertThat(provisioned.isEmailVerified()).isFalse();
         assertThat(provisioned.getPasswordHash()).isEqualTo("$2a$10$preexistingUntrustedHash");
         assertThat(userRepository.count()).isEqualTo(1);
     }
@@ -121,7 +121,7 @@ public class IdentityProvisioningServiceIntegrationTest extends AbstractIntegrat
         var provisioned = provisioningService.provision(new FederatedUser(
                 AuthProvider.GITHUB, "github-sub-3", "notverified@example.com", false));
 
-        assertThat(provisioned.getEmailVerified()).isFalse();
+        assertThat(provisioned.isEmailVerified()).isFalse();
     }
 
 }

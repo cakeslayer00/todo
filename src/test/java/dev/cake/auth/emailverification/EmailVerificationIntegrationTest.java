@@ -99,7 +99,7 @@ public class EmailVerificationIntegrationTest extends AbstractIntegrationTest {
 
         assertThat(optEV).isPresent();
         assertThat(optEV.get().getConsumedAt()).isBefore(Instant.now());
-        assertThat(optEV.get().getUser().getEmailVerified()).isTrue();
+        assertThat(optEV.get().getUser().isEmailVerified()).isTrue();
     }
 
     @Test

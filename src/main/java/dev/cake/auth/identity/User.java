@@ -34,8 +34,8 @@ public class User {
     private String email;
 
     @Builder.Default
-    @Column(name = "email_verified")
-    private Boolean emailVerified = false;
+    @Column(nullable = false, name = "email_verified")
+    private boolean emailVerified = false;
 
     @Column(name = "password_hash")
     private String passwordHash;

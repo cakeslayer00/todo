@@ -52,7 +52,7 @@ public class IdentityProvisioningService {
      * has proven ownership, so the identity is linked without elevating trust.
      */
     private User claim(User user, FederatedUser federated) {
-        if (Boolean.TRUE.equals(user.getEmailVerified()) || !federated.emailVerified()) {
+        if (user.isEmailVerified() || !federated.emailVerified()) {
             return user;
         }
 

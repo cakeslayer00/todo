@@ -38,9 +38,9 @@ databaseChangeLog:
               - column:
                   name: email_verified
                   type: BOOLEAN
-                  constraints:
-                    nullable: true
                   defaultValueBoolean: false
+                  constraints:
+                    nullable: false
               - column:
                   name: password_hash
                   type: VARCHAR(255)

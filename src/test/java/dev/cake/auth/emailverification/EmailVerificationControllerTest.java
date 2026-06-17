@@ -58,7 +58,7 @@ public class EmailVerificationControllerTest extends AbstractIntegrationTest {
 
         assertThat(userRepository.findByPublicId(user.getPublicId()))
                 .get()
-                .extracting(User::getEmailVerified)
+                .extracting(User::isEmailVerified)
                 .isEqualTo(true);
     }
 

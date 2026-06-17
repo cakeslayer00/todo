@@ -42,7 +42,7 @@ public class RegistrationServiceIntegrationTest extends AbstractIntegrationTest 
 
         User user = optUser.get();
         assertThat(user.getUsername()).isEqualTo("john_doe");
-        assertThat(user.getEmailVerified()).isFalse();
+        assertThat(user.isEmailVerified()).isFalse();
         assertThat(user.getPasswordHash()).isNotEqualTo("securePassword123");
 
         assertThat(identityRepository.findUserByProviderAndProviderSubject(

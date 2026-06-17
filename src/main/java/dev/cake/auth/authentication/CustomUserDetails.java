@@ -13,7 +13,7 @@ import java.util.UUID;
 record CustomUserDetails(Long id,
                          String username,
                          String email,
-                         Boolean emailVerified,
+                         boolean emailVerified,
                          String passwordHash,
                          UUID publicId) implements UserDetails {
 
@@ -21,7 +21,7 @@ record CustomUserDetails(Long id,
         this(user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getEmailVerified(),
+                user.isEmailVerified(),
                 user.getPasswordHash(),
                 user.getPublicId()
         );
