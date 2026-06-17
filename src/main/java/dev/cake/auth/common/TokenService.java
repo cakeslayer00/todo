@@ -1,5 +1,6 @@
 package dev.cake.auth.common;
 
+import dev.cake.auth.common.properties.JwtTokenProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -13,14 +14,15 @@ import java.time.Instant;
 public class TokenService {
 
     private final JwtEncoder jwtEncoder;
+    private final JwtTokenProperties jwtTokenProperties;
 
     public String generateToken(String subject) {
         var now = Instant.now();
         var claims = JwtClaimsSet.builder()
-                .issuer("https://cakeslayer.dev")
+                .issuer(jwtTokenProperties.issuer())
                 .subject(subject)
                 .issuedAt(now)
-                .expiresAt(now.plusSeconds(3600))
+                .expiresAt(now.plus(jwtTokenProperties.expiry()))
                 .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }

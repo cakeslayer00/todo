@@ -40,6 +40,9 @@ app:
   jwt:
     public-key: classpath:keys/public.pem
     private-key: classpath:keys/private.pem
+    meta:
+      issuer: https://cakeslayer.dev
+      expiry: 15m
 
   kafka:
     topics:
