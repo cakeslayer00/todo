@@ -1,13 +1,8 @@
 package dev.cake.auth.registration;
 
-import dev.cake.auth.identity.AuthProvider;
-import dev.cake.auth.identity.Identity;
-import dev.cake.auth.identity.User;
 import dev.cake.auth.common.exception.DuplicateResourceException;
-import dev.cake.auth.identity.IdentityRepository;
-import dev.cake.auth.identity.UserRepository;
+import dev.cake.auth.identity.*;
 import dev.cake.auth.registration.event.UserRegisteredEvent;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;

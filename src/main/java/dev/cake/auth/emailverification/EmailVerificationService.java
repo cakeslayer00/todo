@@ -1,8 +1,8 @@
 package dev.cake.auth.emailverification;
 
-import dev.cake.auth.identity.User;
 import dev.cake.auth.common.exception.InvalidTokenException;
 import dev.cake.auth.emailverification.event.EmailVerificationRequestedEvent;
+import dev.cake.auth.identity.User;
 import dev.cake.auth.identity.UserRepository;
 import dev.cake.auth.registration.event.UserRegisteredEvent;
 import lombok.RequiredArgsConstructor;

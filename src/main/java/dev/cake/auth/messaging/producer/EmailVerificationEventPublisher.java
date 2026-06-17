@@ -1,7 +1,7 @@
 package dev.cake.auth.messaging.producer;
 
-import dev.cake.auth.messaging.configuration.KafkaTopicProperties;
 import dev.cake.auth.emailverification.event.EmailVerificationRequestedEvent;
+import dev.cake.auth.messaging.configuration.KafkaTopicProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

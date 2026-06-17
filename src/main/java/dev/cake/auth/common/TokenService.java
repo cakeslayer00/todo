@@ -17,7 +17,7 @@ public class TokenService {
     public String generateToken(String subject) {
         var now = Instant.now();
         var claims = JwtClaimsSet.builder()
-                .issuer("self")
+                .issuer("https://cakeslayer.dev")
                 .subject(subject)
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(3600))
