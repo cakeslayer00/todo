@@ -49,6 +49,7 @@ app:
       email-verification-requested:
         name: auth.email-verification-requested
         replicas: 1
+        retention: 1h
 
 springdoc:
   api-docs:
