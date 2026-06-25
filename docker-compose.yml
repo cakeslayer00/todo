@@ -2,7 +2,6 @@ services:
   postgres:
     image: postgres:17-alpine
     container_name: auth-postgres
-    # wal_level=logical is required for Debezium's pgoutput logical decoding.
     command: ["postgres", "-c", "wal_level=logical"]
     env_file:
       - .env
@@ -38,7 +37,7 @@ services:
       - broker
       - postgres
     ports:
-      - "8083:8083"   # Connect REST API
+      - "8083:8083"
     environment:
       BOOTSTRAP_SERVERS: broker:9092
       GROUP_ID: auth-connect
@@ -48,6 +47,26 @@ services:
       CONFIG_STORAGE_REPLICATION_FACTOR: 1
       OFFSET_STORAGE_REPLICATION_FACTOR: 1
       STATUS_STORAGE_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/connectors"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  connect-init:
+    image: postgres:17-alpine
+    depends_on:
+      connect:
+        condition: service_healthy
+      postgres:
+        condition: service_started
+    env_file:
+      - .env
+    volumes:
+      - ./debezium:/debezium:ro
+    entrypoint: ["sh", "/debezium/register.sh"]
+    restart: on-failure
 
 volumes:
   postgres-data:
