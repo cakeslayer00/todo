@@ -1,7 +1,7 @@
 package dev.cake.auth.emailverification;
 
 import dev.cake.auth.common.AbstractIntegrationTest;
-import dev.cake.auth.emailverification.event.EmailVerificationRequestedEvent;
+import dev.cake.auth.emailverification.event.EmailVerificationRequested;
 import dev.cake.auth.identity.User;
 import dev.cake.auth.identity.UserRepository;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -87,9 +87,9 @@ public class EmailVerificationControllerTest extends AbstractIntegrationTest {
                 .with(jwt().jwt(j -> j.subject(user.getPublicId().toString()))))
                 .hasStatus(HttpStatus.ACCEPTED);
 
-        assertThat(applicationEvents.stream(EmailVerificationRequestedEvent.class))
+        assertThat(applicationEvents.stream(EmailVerificationRequested.class))
                 .singleElement()
-                .extracting(EmailVerificationRequestedEvent::publicId)
+                .extracting(EmailVerificationRequested::publicId)
                 .isEqualTo(user.getPublicId());
     }
 

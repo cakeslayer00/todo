@@ -1,7 +1,7 @@
 package dev.cake.auth.emailverification;
 
 import dev.cake.auth.common.exception.InvalidTokenException;
-import dev.cake.auth.emailverification.event.EmailVerificationRequestedEvent;
+import dev.cake.auth.emailverification.event.EmailVerificationRequested;
 import dev.cake.auth.identity.User;
 import dev.cake.auth.identity.UserRepository;
 import dev.cake.auth.registration.event.UserRegisteredEvent;
@@ -73,7 +73,7 @@ class EmailVerificationService {
     private void issueAndPublish(User user) {
         var rawToken = issueVerificationToken(user);
 
-        applicationEventPublisher.publishEvent(new EmailVerificationRequestedEvent(
+        applicationEventPublisher.publishEvent(new EmailVerificationRequested(
                 user.getPublicId(), user.getUsername(), user.getEmail(), rawToken));
         log.info("EmailVerificationRequestedEvent was emitted for kafka producer");
     }

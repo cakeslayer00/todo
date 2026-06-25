@@ -2,6 +2,8 @@ services:
   postgres:
     image: postgres:17-alpine
     container_name: auth-postgres
+    # wal_level=logical is required for Debezium's pgoutput logical decoding.
+    command: ["postgres", "-c", "wal_level=logical"]
     env_file:
       - .env
     ports:
@@ -22,12 +24,30 @@ services:
   broker-ui:
     image: provectuslabs/kafka-ui:latest
     ports:
-      - "8083:8080"
+      - "8092:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker:9092
     depends_on:
       - broker
+
+  connect:
+    image: quay.io/debezium/connect:3.0
+    container_name: connect
+    depends_on:
+      - broker
+      - postgres
+    ports:
+      - "8083:8083"   # Connect REST API
+    environment:
+      BOOTSTRAP_SERVERS: broker:9092
+      GROUP_ID: auth-connect
+      CONFIG_STORAGE_TOPIC: _connect_configs
+      OFFSET_STORAGE_TOPIC: _connect_offsets
+      STATUS_STORAGE_TOPIC: _connect_status
+      CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      STATUS_STORAGE_REPLICATION_FACTOR: 1
 
 volumes:
   postgres-data:

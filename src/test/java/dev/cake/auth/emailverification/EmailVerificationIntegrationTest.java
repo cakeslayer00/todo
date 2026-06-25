@@ -2,31 +2,23 @@ package dev.cake.auth.emailverification;
 
 import dev.cake.auth.common.AbstractIntegrationTest;
 import dev.cake.auth.common.exception.InvalidTokenException;
-import dev.cake.auth.emailverification.event.EmailVerificationRequestedEvent;
+import dev.cake.auth.emailverification.event.EmailVerificationRequested;
 import dev.cake.auth.identity.User;
 import dev.cake.auth.identity.UserRepository;
-import dev.cake.auth.messaging.configuration.KafkaTopicProperties;
 import dev.cake.auth.registration.event.UserRegisteredEvent;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,11 +46,9 @@ public class EmailVerificationIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     ApplicationEvents applicationEvents;
     @Autowired
-    EmbeddedKafkaBroker embeddedKafkaBroker;
-    @Autowired
-    KafkaTopicProperties kafkaTopicProperties;
-    @Autowired
-    TransactionTemplate txTemplate;
+    JdbcTemplate jdbcTemplate;
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Test
     void when_invalid_token_received_throw_exception() {
@@ -108,35 +98,36 @@ public class EmailVerificationIntegrationTest extends AbstractIntegrationTest {
 
         applicationEventPublisher.publishEvent(new UserRegisteredEvent(user.getPublicId()));
 
-        assertThat(applicationEvents.stream(EmailVerificationRequestedEvent.class))
+        assertThat(applicationEvents.stream(EmailVerificationRequested.class))
                 .singleElement()
-                .extracting(EmailVerificationRequestedEvent::publicId)
+                .extracting(EmailVerificationRequested::publicId)
                 .isEqualTo(user.getPublicId());
     }
 
     @Test
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    void when_user_registered_event_emitted_verification_event_is_published_and_consumed_from_kafka() {
-        try (Consumer<String, EmailVerificationRequestedEvent> consumer = createTestConsumer()) {
-            embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, kafkaTopicProperties.emailVerificationRequested().name());
+    void when_user_registered_event_emitted_outbox_row_is_written() {
+        var user = generatePersistedUser();
 
-            var user = generatePersistedUser();
+        applicationEventPublisher.publishEvent(new UserRegisteredEvent(user.getPublicId()));
+        // Force the outbox INSERT onto the shared transactional connection so the
+        // raw query below can see it (still rolled back at the end of the test).
+        entityManager.flush();
 
-            txTemplate.executeWithoutResult(_ -> {
-                applicationEventPublisher.publishEvent(new UserRegisteredEvent(user.getPublicId()));
-            });
+        var rows = jdbcTemplate.queryForList(
+                "select aggregatetype, aggregateid, type, payload::text as payload from outbox");
 
-            ConsumerRecord<String, EmailVerificationRequestedEvent> record =
-                    KafkaTestUtils.getSingleRecord(consumer, kafkaTopicProperties.emailVerificationRequested().name(), Duration.ofSeconds(10));
-
-            assertThat(record.key()).isEqualTo(user.getPublicId().toString());
-            assertThat(record.value().publicId()).isEqualTo(user.getPublicId());
-            assertThat(record.value().username()).isEqualTo("johndoe");
-            assertThat(record.value().email()).isEqualTo("johndoe@example.com");
-            assertThat(record.value().token()).isNotBlank();
-        } finally {
-            userRepository.deleteAll();
-        }
+        assertThat(rows)
+                .singleElement()
+                .satisfies(row -> {
+                    assertThat(row).containsEntry("aggregatetype", "email_verification");
+                    assertThat(row).containsEntry("aggregateid", user.getPublicId().toString());
+                    assertThat(row).containsEntry("type", "EmailVerificationRequested");
+                    assertThat(row.get("payload").toString())
+                            .contains(user.getPublicId().toString())
+                            .contains("johndoe")
+                            .contains("johndoe@example.com")
+                            .contains("token");
+                });
     }
 
     @Test
@@ -161,20 +152,10 @@ public class EmailVerificationIntegrationTest extends AbstractIntegrationTest {
 
         emailVerificationService.resendVerificationToken(user.getPublicId());
 
-        assertThat(applicationEvents.stream(EmailVerificationRequestedEvent.class))
+        assertThat(applicationEvents.stream(EmailVerificationRequested.class))
                 .singleElement()
-                .extracting(EmailVerificationRequestedEvent::publicId)
+                .extracting(EmailVerificationRequested::publicId)
                 .isEqualTo(user.getPublicId());
-    }
-
-    private Consumer<String, EmailVerificationRequestedEvent> createTestConsumer() {
-        var props = KafkaTestUtils.consumerProps(embeddedKafkaBroker, "registration-test", true);
-
-        var valueDeserializer = new JacksonJsonDeserializer<>(EmailVerificationRequestedEvent.class)
-                .ignoreTypeHeaders();
-
-        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), valueDeserializer)
-                .createConsumer();
     }
 
     private String issueVerificationToken(User user) {

@@ -1,5 +1,6 @@
 package dev.cake.auth.common;
 
+import dev.cake.auth.common.properties.JwtTokenProperties;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class TokenServiceIntegrationTest extends AbstractIntegrationTest {
 
-
+    @Autowired
+    JwtTokenProperties tokenProperties;
     @Autowired
     TokenService tokenService;
     @Autowired
@@ -33,6 +35,6 @@ public class TokenServiceIntegrationTest extends AbstractIntegrationTest {
         assertThat(decoded.getIssuedAt()).isNotNull();
         assertThat(decoded.getExpiresAt()).isNotNull();
         assertThat(ChronoUnit.SECONDS.between(decoded.getIssuedAt(), decoded.getExpiresAt()))
-                .isEqualTo(3600);
+                .isEqualTo(tokenProperties.expiry().getSeconds());
     }
 }
