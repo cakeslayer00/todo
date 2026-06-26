@@ -20,6 +20,7 @@ import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -122,7 +123,7 @@ public class EmailVerificationIntegrationTest extends AbstractIntegrationTest {
                     assertThat(row).containsEntry("aggregatetype", "email_verification");
                     assertThat(row).containsEntry("aggregateid", user.getPublicId().toString());
                     assertThat(row).containsEntry("type", "EmailVerificationRequested");
-                    assertThat(row.get("payload").toString())
+                    assertThat(Objects.requireNonNull(row.get("payload")).toString())
                             .contains(user.getPublicId().toString())
                             .contains("johndoe")
                             .contains("johndoe@example.com")

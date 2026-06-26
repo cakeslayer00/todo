@@ -7,3 +7,5 @@ databaseChangeLog:
       file: db/changelog/003-create-email-verifications-table.yaml
   - include:
       file: db/changelog/004-create-outbox-table.yaml
+  - include:
+      file: db/changelog/005-create-tasks-table.yaml
