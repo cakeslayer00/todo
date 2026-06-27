@@ -1,4 +1,4 @@
-.PHONY: help infra run down logs status clean
+.PHONY: help infra run down logs status clean keys test-keys
 
 help:           ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -9,6 +9,12 @@ infra:          ## Start infra (Postgres, Kafka, Connect) + auto-register the co
 
 run:            ## Run the auth service on the host (applies migrations on boot)
 	./gradlew bootRun
+
+keys:           ## Generate the RSA JWT keypair for main resources (FORCE=1 to overwrite)
+	./generate-keys.sh src/main/resources/keys $(if $(FORCE),--force)
+
+test-keys:      ## Generate the RSA JWT keypair for test resources (FORCE=1 to overwrite)
+	./generate-keys.sh src/test/resources/keys $(if $(FORCE),--force)
 
 down:           ## Stop infra (keeps volumes)
 	docker compose down
